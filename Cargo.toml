@@ -1,0 +1,9 @@
+[package]
+name = "otta"
+version = "0.1.0"
+edition = "2021"
+
+[dev-dependencies]
+quickcheck = "1.0.3"
+quickcheck_macros = "1.0.0"
+rand = "0.8.5"
