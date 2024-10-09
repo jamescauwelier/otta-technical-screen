@@ -1,5 +1,8 @@
 use std::cmp::Ordering;
 
+pub const MIN: usize = 1;
+pub const MAX: usize = usize::MAX;
+
 #[derive(Clone, Debug)]
 pub(crate) struct Cm {
     value: usize
@@ -55,5 +58,30 @@ impl PartialEq for Cm {
 impl PartialOrd for Cm {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.value.cmp(&other.value))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use quickcheck::Arbitrary;
+    use rand::Rng;
+    use super::*;
+
+    impl Arbitrary for Cm {
+        fn arbitrary(_g: &mut quickcheck::Gen) -> Self {
+            let value = rand::thread_rng().gen_range(MIN..=MAX);
+            Cm::new(value).unwrap()
+        }
+    }
+
+    #[quickcheck]
+    fn values_are_equal_to_themselves(value: Cm) {
+        assert_eq!(value, value)
+    }
+
+    #[quickcheck]
+    fn adding_a_positive_value_increases_value(value: Cm, other: Cm) {
+        let result = value.clone() + other.clone();
+        assert_ne!(value, result)
     }
 }

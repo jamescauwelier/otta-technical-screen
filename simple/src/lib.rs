@@ -19,7 +19,7 @@ use mass_class::MassClass;
  * The implementation handles integer overflows gracefully.
  */
 fn sort(width: usize, height: usize, length: usize, mass: usize) -> String {
-    if !validate_input(width, height, length, mass) {
+    if !validate_inputs(width, height, length, mass) {
         return "".to_string()
     }
 
@@ -37,7 +37,7 @@ fn sort(width: usize, height: usize, length: usize, mass: usize) -> String {
     classification_result.to_string()
 }
 
-fn validate_input(width: usize, height: usize, length: usize, mass: usize) -> bool {
+fn validate_inputs(width: usize, height: usize, length: usize, mass: usize) -> bool {
     width > 0 && height > 0 && length > 0 && mass > 0
 }
 

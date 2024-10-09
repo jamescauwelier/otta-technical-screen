@@ -20,8 +20,10 @@ pub(crate)  mod sort_error;
  *
  * This sort function should not fail, but doesn't honor the
  * original specification.
+ *
+ * All input values should be positive integers and non-zero.
  */
-fn safe_sort(width: usize, height: usize, length: usize, mass: usize) -> Result<SortResult, SortError> {
+pub fn safe_sort(width: usize, height: usize, length: usize, mass: usize) -> Result<SortResult, SortError> {
 
     // type conversions to impose domain invariants
     let width_cm = Cm::new(width).map_err(|e| SortError::InvalidWidth(e.original_value()))?;
@@ -49,7 +51,7 @@ fn safe_sort(width: usize, height: usize, length: usize, mass: usize) -> Result<
 fn safe_sort_2(_width: usize, _height: usize, _length: usize, _mass: usize) -> String {
     match safe_sort(_width, _height, _length, _mass) {
         Ok(result) => result.to_string(),
-        Err(_) => "error".to_string()
+        Err(_) => "".to_string()
     }
 }
 
@@ -208,44 +210,106 @@ pub(crate) mod test_dependencies {
 
 #[cfg(test)]
 mod tests {
-    use crate::sort_error::SortError;
-    use crate::sort_result::SortResult;
-    use crate::test_dependencies::length::{InvalidLength, ValidLength};
-    use crate::test_dependencies::mass::{InvalidMass, ValidMass};
-    use crate::test_dependencies::sort_helper;
 
-    #[quickcheck]
-    fn sorting_packages_returns_one_of_4_strings(width: ValidLength, height: ValidLength, length: ValidLength, mass: ValidMass) {
-        let requirement = SortResult::any()
-            .contains(&sort_helper(width, height, length, mass).unwrap());
-        assert!(requirement);
+    mod safe_sort {
+        use crate::sort_error::SortError;
+        use crate::sort_result::SortResult;
+        use crate::test_dependencies::length::{InvalidLength, ValidLength};
+        use crate::test_dependencies::mass::{InvalidMass, ValidMass};
+        use crate::test_dependencies::sort_helper;
+
+        #[quickcheck]
+        fn sorting_packages_returns_one_of_4_strings(width: ValidLength, height: ValidLength, length: ValidLength, mass: ValidMass) {
+            let requirement = SortResult::all()
+                .contains(&sort_helper(width, height, length, mass).unwrap());
+            assert!(requirement);
+        }
+
+        #[quickcheck]
+        fn sorting_with_an_invalid_width_produces_an_error(width: InvalidLength, height: ValidLength, length: ValidLength, mass: ValidMass) {
+            let expected = Err(SortError::InvalidWidth(width.clone().into()));
+            let got = sort_helper(width, height, length, mass);
+            assert_eq!(got, expected)
+        }
+
+        #[quickcheck]
+        fn sorting_with_an_invalid_height_produces_an_error(width: ValidLength, height: InvalidLength, length: ValidLength, mass: ValidMass) {
+            let expected = Err(SortError::InvalidHeight(height.clone().into()));
+            let got = sort_helper(width, height, length, mass);
+            assert_eq!(got, expected)
+        }
+
+        #[quickcheck]
+        fn sorting_with_an_invalid_length_produces_an_error(width: ValidLength, height: ValidLength, length: InvalidLength, mass: ValidMass) {
+            let expected = Err(SortError::InvalidLength(length.clone().into()));
+            let got = sort_helper(width, height, length, mass);
+            assert_eq!(got, expected)
+        }
+
+        #[quickcheck]
+        fn sorting_with_an_invalid_mass_produces_an_error(width: ValidLength, height: ValidLength, length: ValidLength, mass: InvalidMass) {
+            let expected = Err(SortError::InvalidMass(mass.clone().into()));
+            let got = sort_helper(width, height, length, mass);
+            assert_eq!(got, expected)
+        }
     }
 
-    #[quickcheck]
-    fn sorting_with_an_invalid_width_produces_an_error(width: InvalidLength, height: ValidLength, length: ValidLength, mass: ValidMass) {
-        let expected = Err(SortError::InvalidWidth(width.clone().into()));
-        let got = sort_helper(width, height, length, mass);
-         assert_eq!(got, expected)
+    mod safe_sort_2 {
+        use crate::safe_sort_2;
+
+        #[test]
+        fn test_standard_sort() {
+            assert_eq!(safe_sort_2(1, 1, 1, 1), "standard")
+        }
+
+        #[test]
+        fn test_special_sort_overweight() {
+            assert_eq!(safe_sort_2(1, 1, 1, 100), "special")
+        }
+
+        #[test]
+        fn test_special_sort_oversized() {
+            assert_eq!(safe_sort_2(1000, 1, 1, 10), "special")
+        }
+
+        #[test]
+        fn test_rejected_sort() {
+            assert_eq!(safe_sort_2(1000, 1, 1, 100), "rejected")
+        }
+
+        #[test]
+        fn test_panicking_sort() {
+            assert_eq!(safe_sort_2(1000, 1, 0, 100), "")
+        }
     }
 
-    #[quickcheck]
-    fn sorting_with_an_invalid_height_produces_an_error(width: ValidLength, height: InvalidLength, length: ValidLength, mass: ValidMass) {
-        let expected = Err(SortError::InvalidHeight(height.clone().into()));
-        let got = sort_helper(width, height, length, mass);
-        assert_eq!(got, expected)
-    }
+    mod panicking_sort {
+        use crate::sort;
 
-    #[quickcheck]
-    fn sorting_with_an_invalid_length_produces_an_error(width: ValidLength, height: ValidLength, length: InvalidLength, mass: ValidMass) {
-        let expected = Err(SortError::InvalidLength(length.clone().into()));
-        let got = sort_helper(width, height, length, mass);
-        assert_eq!(got, expected)
-    }
+        #[test]
+        fn test_standard_sort() {
+            assert_eq!(sort(1, 1, 1, 1), "standard")
+        }
 
-    #[quickcheck]
-    fn sorting_with_an_invalid_mass_produces_an_error(width: ValidLength, height: ValidLength, length: ValidLength, mass: InvalidMass) {
-        let expected = Err(SortError::InvalidMass(mass.clone().into()));
-        let got = sort_helper(width, height, length, mass);
-        assert_eq!(got, expected)
+        #[test]
+        fn test_special_sort_overweight() {
+            assert_eq!(sort(1, 1, 1, 100), "special")
+        }
+
+        #[test]
+        fn test_special_sort_oversized() {
+            assert_eq!(sort(1000, 1, 1, 10), "special")
+        }
+
+        #[test]
+        fn test_rejected_sort() {
+            assert_eq!(sort(1000, 1, 1, 100), "rejected")
+        }
+
+        #[test]
+        #[should_panic]
+        fn test_panicking_sort() {
+            assert_eq!(sort(1000, 1, 0, 100), "rejected")
+        }
     }
 }

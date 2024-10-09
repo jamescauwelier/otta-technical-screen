@@ -1,13 +1,22 @@
 use std::fmt::Formatter;
 
+/**
+ * SortResult
+ *
+ * Documents the result type for the happy path of the code,
+ * where a package is sorted as either:
+ * - standard
+ * - special
+ * - rejected
+ */
 #[derive(Clone, Debug, PartialEq)]
-pub(crate) enum SortResult {
+pub enum SortResult {
     Standard, Special, Rejected
 }
 
 #[cfg(test)]
 impl SortResult {
-    pub(crate) fn any() -> [Self; 3] {
+    pub fn all() -> [Self; 3] {
         [SortResult::Standard, SortResult::Special, SortResult::Rejected]
     }
 }
@@ -28,7 +37,7 @@ mod tests {
 
     #[test]
     fn test_any() {
-        assert_eq!(SortResult::any(), [SortResult::Standard, SortResult::Special, SortResult::Rejected]);
+        assert_eq!(SortResult::all(), [SortResult::Standard, SortResult::Special, SortResult::Rejected]);
     }
 
     #[test]

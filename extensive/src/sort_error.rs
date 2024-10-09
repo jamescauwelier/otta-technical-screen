@@ -1,7 +1,13 @@
 use crate::measurements::kg::KgError;
 
+/**
+ * SortError
+ *
+ * Documents the potential error states that can occur when
+ * sorting a package. At this point, all of these are input errors.
+ */
 #[derive(Clone, Debug, PartialEq)]
-pub(crate) enum SortError {
+pub enum SortError {
     InvalidHeight(usize),
     InvalidWidth(usize),
     InvalidLength(usize),
