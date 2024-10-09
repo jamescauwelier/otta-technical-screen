@@ -18,7 +18,7 @@ use mass_class::MassClass;
  * Errors are handled by returning an empty string.
  * The implementation handles integer overflows gracefully.
  */
-fn sort(width: usize, height: usize, length: usize, mass: usize) -> String {
+pub fn sort(width: usize, height: usize, length: usize, mass: usize) -> String {
     if !validate_inputs(width, height, length, mass) {
         return "".to_string()
     }

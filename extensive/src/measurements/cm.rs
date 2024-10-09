@@ -23,7 +23,7 @@ impl CmError {
 
 impl Cm {
     fn is_valid(value: usize) -> bool {
-        value >= 1
+        value >= MIN && value <= MAX
     }
 
     pub(crate) fn new(value: usize) -> Result<Self, CmError> {

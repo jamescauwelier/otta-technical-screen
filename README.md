@@ -22,7 +22,23 @@ solution could be implemented by only using `usize` types and
 conditional logic contained within a single function. This approach was
 first attempted, but did not express the problem and solution clearly enough.
 
-## Approach
+## Instructions
+
+To test the simple code, run:
+
+```shell
+cd simple
+cargo test
+```
+
+Similarly, to test the extensive code, run:
+
+```shell
+cd extensive
+cargo test
+```
+
+## Approach (extensive)
 
 ### Testing
 
@@ -78,3 +94,12 @@ could be converted to `WidthError`, `HeightError`, `LengthError` and
 `MassError`. These new error types could then have `From` implementations
 to allow for easy conversion up until the `SortError` type. This would
 remove the manual error conversions in the `sort` function.
+
+## Approach (simple)
+
+Mostly similar explanation of the approach, but with less domain detail.
+The type names are also slightly different.
+
+The publicly documented elements are:
+
+- the `sort()` function
